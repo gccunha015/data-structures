@@ -3,12 +3,12 @@
 
 #include "DynamicArray.h"
 
-dynamic_array da_create(unsigned int capacity)
+dynamic_array da_create(void)
 {
   dynamic_array array;
-  array.capacity = capacity;
+  array.capacity = 1;
   array.size = 0;
-  array.values = (unsigned int *) calloc(capacity, sizeof(unsigned int));
+  array.values = (unsigned int *) calloc(array.capacity, sizeof(unsigned int));
 
   return array;
 }
@@ -42,7 +42,7 @@ void da_insert_into(unsigned int value, unsigned int position, dynamic_array *ar
   array->size++;
 }
 
-void da_insert(unsigned int value, dynamic_array *array)
+void da_append(unsigned int value, dynamic_array *array)
 {
   if (da_is_full(array)) return;
 
@@ -60,15 +60,11 @@ int da_delete_from(unsigned int position, dynamic_array *array)
   return 1;
 }
 
-int da_delete(unsigned int value, dynamic_array *array)
+int da_delete(dynamic_array *array)
 {
   if (da_is_empty(array)) return 0;
 
-  for (unsigned int i = 0; i < array->size; i++) {
-    if (array->values[i] == value) return da_delete_from(i, array);
-  }
-
-  return 0;
+  return da_delete_from((array->size - 1), array);
 }
 
 void da_values(dynamic_array *array)
