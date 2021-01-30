@@ -4,7 +4,6 @@
 
 #include "DynamicArray.h"
 
-void populate(dynamic_array *);
 int show_menu(void);
 void execute_option(int, dynamic_array *);
 
@@ -18,25 +17,23 @@ int main(void)
     execute_option(opt, &array);
   } while (opt != 0);
 
-  da_destroy(&array);
-
   return 0;
 }
 
-void populate(dynamic_array *array)
+void populate(unsigned int elements, dynamic_array *array)
 {
-  int max = array->capacity * 10;
+  int max = 1000;
 
   srand(time(NULL));
 
-  for (int i = 0; i < array->capacity; i++) {
-    da_insert(rand() % max, array);
+  for (int i = 0; i < elements; i++) {
+    da_append(rand() % max, array);
   }
 }
 
 int is_invalid(int opt)
 {
-  return opt < 0 || opt > 9;
+  return opt < 0 || opt > 10;
 }
 
 int show_menu(void)
@@ -44,16 +41,17 @@ int show_menu(void)
   int opt = -1, invalid_opt;
 
   printf("------------------------------ MENU ------------------------------\n");
-  printf(" [0] exit\n");
-  printf(" [1] append\n");
-  printf(" [2] insert into\n");
-  printf(" [3] delete\n");
-  printf(" [4] delete from\n");
-  printf(" [5] search\n");
-  printf(" [6] info\n");
-  printf(" [7] info without values\n");
-  printf(" [8] just values\n");
-  printf(" [9] populate\n");
+  printf(" [00] exit\n");
+  printf(" [01] append\n");
+  printf(" [02] insert into\n");
+  printf(" [03] delete\n");
+  printf(" [04] delete from\n");
+  printf(" [05] search\n");
+  printf(" [06] info\n");
+  printf(" [07] info without values\n");
+  printf(" [08] just values\n");
+  printf(" [09] populate\n");
+  printf(" [10] deplete\n");
   printf("------------------------------------------------------------------\n");
   do {
     printf("What is your option? ");
@@ -114,9 +112,16 @@ void execute_option(int opt, dynamic_array *array)
       da_values(array);
       break;
     case 9:
-      populate(array);
+      value = ask_question("How many random numbers do you want to append to the array?");
+      populate(value, array);
+      da_values(array);
+      break;
+    case 10:
+      da_destroy(array);
+      *array = da_create(); 
       break;
     default:
+      da_destroy(array);
       exit(0);
   }
 }
