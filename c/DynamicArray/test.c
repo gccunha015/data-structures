@@ -20,21 +20,7 @@ int main(void)
   return 0;
 }
 
-void populate(unsigned int elements, dynamic_array *array)
-{
-  int max = 1000;
-
-  srand(time(NULL));
-
-  for (int i = 0; i < elements; i++) {
-    da_append(rand() % max, array);
-  }
-}
-
-int is_invalid(int opt)
-{
-  return opt < 0 || opt > 10;
-}
+int is_invalid(int);
 
 int show_menu(void)
 {
@@ -62,6 +48,68 @@ int show_menu(void)
   return opt;
 }
 
+int is_invalid(int opt)
+{
+  return opt < 0 || opt > 10;
+}
+
+int ask_question(char *);
+void populate(unsigned int, dynamic_array *);
+
+void execute_option(int opt, dynamic_array *array)
+{
+  unsigned int value;
+  int position;
+
+  switch (opt) {
+    case 1:
+      value = ask_question("What value do you want to append?");
+      da_append(value, array);
+      break;
+    case 2:
+      value = ask_question("What value do you want to insert?");
+      position = ask_question("What position do you want to insert into?");
+      da_insert_into(value, position, array);
+      break;
+    case 3:
+      da_delete(array);
+      break;
+    case 4:
+      position = ask_question("What position do you want to delete from?");
+      da_delete_from(position, array);
+      break;
+    case 5: {
+        char *answer = (char *) malloc(51 * sizeof(char));
+        value = ask_question("What value do you want to search?");
+        position = da_search(value, array);
+        position != -1 ? sprintf(answer, "First appearance of value '%03u' at position '%03i'", value, position) : sprintf(answer, "Value not found!");
+        printf("%s\n", answer);
+        free(answer);
+        break;
+      }
+    case 6:
+      da_info(1, array);
+      break;
+    case 7:
+      da_info(0, array);
+      break;
+    case 8:
+      da_values(array);
+      break;
+    case 9:
+      value = ask_question("How many random numbers do you want to append to the array?");
+      populate(value, array);
+      break;
+    case 10:
+      da_destroy(array);
+      *array = da_create(); 
+      break;
+    default:
+      da_destroy(array);
+      exit(0);
+  }
+}
+
 int ask_question(char *question)
 {
   int answer = 0, invalid_answer;
@@ -75,53 +123,13 @@ int ask_question(char *question)
   return answer;
 }
 
-void execute_option(int opt, dynamic_array *array)
+void populate(unsigned int elements, dynamic_array *array)
 {
-  int value, position;
+  int max = 1000;
 
-  switch (opt) {
-    case 1:
-      value = ask_question("What value do you want to append?");
-      da_append(value, array);
-      da_values(array);
-      break;
-    case 2:
-      value = ask_question("What value do you want to insert?");
-      position = ask_question("What position do you want to insert into?");
-      da_insert_into(value, position, array);
-      da_values(array);
-      break;
-    case 3:
-      da_delete(array);
-      da_values(array);
-      break;
-    case 4:
-      position = ask_question("What position do you want to delete from?");
-      da_delete_from(position, array);
-      da_values(array);
-      break;
-    case 5:
-      break;
-    case 6:
-      da_info(1, array);
-      break;
-    case 7:
-      da_info(0, array);
-      break;
-    case 8:
-      da_values(array);
-      break;
-    case 9:
-      value = ask_question("How many random numbers do you want to append to the array?");
-      populate(value, array);
-      da_values(array);
-      break;
-    case 10:
-      da_destroy(array);
-      *array = da_create(); 
-      break;
-    default:
-      da_destroy(array);
-      exit(0);
+  srand(time(NULL));
+
+  for (int i = 0; i < elements; i++) {
+    da_append(rand() % max, array);
   }
 }

@@ -23,7 +23,7 @@ int da_is_full(dynamic_array *array)
   return array->size == array->capacity;
 }
 
-int da_invalid_position(unsigned int position, dynamic_array *array)
+int da_invalid_position(int position, dynamic_array *array)
 {
   return position < 0 || position > array->size;
 }
@@ -65,26 +65,26 @@ int da_can_decrease_capacity(dynamic_array *array)
           array->size > 1;
 }
 
-void da_shift_left(unsigned int position, dynamic_array *array)
+void da_shift_left(int position, dynamic_array *array)
 {
   for(int i = array->size; i > position; i--) {
     array->values[i] = array->values[i - 1];
   }
 }
 
-void da_shift_right(unsigned int position, dynamic_array *array)
+void da_shift_right(int position, dynamic_array *array)
 {
   for(int i = position; i < (array->size - 1); i++) {
     array->values[i] = array->values[i + 1];
   }
 }
 
-void da_insert_into(unsigned int value, unsigned int position, dynamic_array *array)
+void da_insert_into(unsigned int value, int position, dynamic_array *array)
 {
   if (da_invalid_position(position, array)) return;
   if (da_is_full(array)) da_increase_capacity(array);
-  
-  da_shift_left(position, array);
+  if (position < array->size) da_shift_left(position, array);
+
   array->values[position] = value;
   array->size++;
 }
@@ -94,12 +94,12 @@ void da_append(unsigned int value, dynamic_array *array)
   da_insert_into(value, array->size, array);
 }
 
-void da_delete_from(unsigned int position, dynamic_array *array)
+void da_delete_from(int position, dynamic_array *array)
 {
   if (da_is_empty(array) ||
       da_invalid_position(position, array)) return;
-
-  da_shift_right(position, array);
+  if (position < (array->size - 1)) da_shift_right(position, array);
+  
   array->values[array->size - 1] = NO_VALUE;
   array->size--;
 
@@ -109,6 +109,14 @@ void da_delete_from(unsigned int position, dynamic_array *array)
 void da_delete(dynamic_array *array)
 {
   da_delete_from((array->size - 1), array);
+}
+
+int da_search(unsigned int value, dynamic_array *array)
+{
+  for (int i = 0; i < array->size; i++) {
+    if (array->values[i] == value) return i;
+  }
+  return -1;
 }
 
 void da_values(dynamic_array *array)
